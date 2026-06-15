@@ -10,6 +10,7 @@ const (
 	DefaultServiceQuery = "_services._dns-sd._udp.local."
 
 	// MulticastAddr is the standard mDNS IPv4 multicast address.
+	// Currently unused; reserved for future multicast scanning mode.
 	MulticastAddr = "224.0.0.251:5353"
 
 	// DefaultPort is the standard mDNS port.
@@ -67,7 +68,8 @@ func BuildQuery(name string, qtype uint16) *dns.Msg {
 }
 
 // BuildQueryNoUnicast constructs an mDNS query without the unicast-response bit.
-// Use for multicast queries where we want all responders.
+// Currently unused; reserved for future multicast scanning mode where all
+// responders should reply.
 func BuildQueryNoUnicast(name string, qtype uint16) *dns.Msg {
 	msg := new(dns.Msg)
 	msg.SetQuestion(dns.Fqdn(name), qtype)

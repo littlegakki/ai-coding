@@ -64,19 +64,21 @@ func writeText(assets []mdns.Asset) error {
 		if len(a.Services) > 0 {
 			fmt.Println("services:")
 
-			// Sort services: portless (device-info) first, then by port
-			sort.Slice(a.Services, func(i, j int) bool {
-				if a.Services[i].Port == 0 && a.Services[j].Port != 0 {
+			// Sort a copy: portless (device-info) first, then by port
+			sorted := make([]mdns.ServiceInfo, len(a.Services))
+			copy(sorted, a.Services)
+			sort.Slice(sorted, func(i, j int) bool {
+				if sorted[i].Port == 0 && sorted[j].Port != 0 {
 					return true
 				}
-				if a.Services[i].Port != 0 && a.Services[j].Port == 0 {
+				if sorted[i].Port != 0 && sorted[j].Port == 0 {
 					return false
 				}
-				return a.Services[i].Port < a.Services[j].Port
+				return sorted[i].Port < sorted[j].Port
 			})
 
-			for _, svc := range a.Services {
-				writeServiceBlock(&svc)
+			for i := range sorted {
+				writeServiceBlock(&sorted[i])
 			}
 		}
 

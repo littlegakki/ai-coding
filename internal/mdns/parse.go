@@ -124,28 +124,7 @@ func DeepParse(msg *dns.Msg) ([]ServiceInfo, []string) {
 		services = append(services, svc)
 	}
 
-	// Step 5: also check for groups that exist only as PTR targets without
-	// corresponding SRV/TXT records — these are portless "device-info" style services
-	for _, ptrTarget := range ptrList {
-		key := strings.ToLower(ptrTarget + ".")
-		if _, ok := groups[key]; !ok {
-			// This PTR target has no corresponding SRV/TXT group.
-			// Check if it's a service type (starts with _) — skip those.
-			if strings.HasPrefix(ptrTarget, "_") {
-				continue
-			}
-			// It's an instance name. Try to find TXT/A records with this owner.
-			// These would have been caught in the groups above if present.
-		}
-	}
-
-	// Remove service-type entries from ptrList (keep only instance targets or service types)
-	cleanPTR := make([]string, 0, len(ptrList))
-	for _, p := range ptrList {
-		cleanPTR = append(cleanPTR, p)
-	}
-
-	return services, cleanPTR
+	return services, ptrList
 }
 
 // buildServiceInfo builds a ServiceInfo from a grouped set of records.
